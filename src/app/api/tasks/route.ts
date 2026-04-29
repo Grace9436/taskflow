@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 import { TaskCreateSchema } from "@/lib/validations";
 
 const QuerySchema = z.object({
@@ -10,6 +12,11 @@ const QuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = request.nextUrl;
     const query = QuerySchema.safeParse({
       status: searchParams.get("status") ?? undefined,
@@ -23,7 +30,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const where: Record<string, string> = {};
+    const where: Record<string, string> = { userId: session.user.id };
     if (query.data.status) where.status = query.data.status;
     if (query.data.priority) where.priority = query.data.priority;
 
@@ -43,6 +50,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const parsed = TaskCreateSchema.safeParse(body);
 
@@ -53,7 +65,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newTask = await prisma.task.create({ data: parsed.data });
+    const newTask = await prisma.task.create({
+      data: { ...parsed.data, userId: session.user.id },
+    });
 
     return NextResponse.json({ data: newTask, message: "success" }, { status: 201 });
   } catch {

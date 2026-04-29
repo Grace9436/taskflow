@@ -9,6 +9,7 @@ import { TaskCard } from "@/components/tasks/TaskCard";
 import { TaskFilters } from "@/components/tasks/TaskFilters";
 import { TaskModal } from "@/components/tasks/TaskModal";
 import { DeleteConfirm } from "@/components/tasks/DeleteConfirm";
+import { UserMenu } from "@/components/UserMenu";
 import type { Task } from "@/types/task";
 import type { TaskCreate } from "@/lib/validations";
 
@@ -75,10 +76,13 @@ export default function Home() {
               共 {tasks.length} 个任务
             </p>
           </div>
-          <Button onClick={handleOpenCreate}>
-            <PlusIcon className="size-4" />
-            新建任务
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button onClick={handleOpenCreate}>
+              <PlusIcon className="size-4" />
+              新建任务
+            </Button>
+            <UserMenu />
+          </div>
         </header>
 
         {/* Filters */}
