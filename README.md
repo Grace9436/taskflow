@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Taskflow
 
-## Getting Started
+简洁高效的全栈任务管理应用，基于 Next.js 14 + Prisma + Supabase 构建。
 
-First, run the development server:
+## 技术栈
+
+- **框架**: Next.js 14 (App Router)
+- **语言**: TypeScript
+- **样式**: Tailwind CSS v4 + shadcn/ui
+- **数据库**: PostgreSQL (Supabase)
+- **ORM**: Prisma
+- **验证**: Zod
+- **数据请求**: SWR
+- **通知**: Sonner
+- **部署**: Vercel
+
+## 本地启动
 
 ```bash
+# 1. 克隆仓库
+git clone https://github.com/Grace9436/taskflow.git
+cd taskflow
+
+# 2. 安装依赖
+npm install
+
+# 3. 配置环境变量
+# 创建 .env 文件，填入以下内容：
+# DATABASE_URL="postgresql://...?pgbouncer=true"
+# DIRECT_URL="postgresql://..."
+
+# 4. 运行数据库迁移
+npx prisma migrate dev
+
+# 5. 填充测试数据（可选）
+npx prisma db seed
+
+# 6. 启动开发服务器
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+打开 http://localhost:3000 查看应用。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 项目目录结构
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── api/tasks/          # RESTful API 路由
+│   │   ├── route.ts        # GET (列表) + POST (新建)
+│   │   └── [id]/route.ts   # PATCH (编辑) + DELETE (删除)
+│   ├── layout.tsx          # 根布局
+│   ├── page.tsx            # 主页面（任务仪表盘）
+│   ├── not-found.tsx       # 404 页面
+│   └── globals.css         # 全局样式
+├── components/
+│   ├── tasks/              # 任务相关组件
+│   │   ├── TaskCard.tsx    # 任务卡片
+│   │   ├── TaskForm.tsx    # 任务表单（新建/编辑）
+│   │   ├── TaskModal.tsx   # 任务弹窗
+│   │   ├── TaskFilters.tsx # 筛选栏
+│   │   └── DeleteConfirm.tsx # 删除确认对话框
+│   └── ui/                 # shadcn/ui 组件
+├── hooks/
+│   └── useTasks.ts         # 任务数据 Hook (SWR)
+├── lib/
+│   ├── prisma.ts           # Prisma 客户端单例
+│   ├── validations.ts      # Zod 校验 Schema
+│   └── utils.ts            # 工具函数
+└── types/
+    └── task.ts             # 类型定义
+prisma/
+├── schema.prisma           # 数据模型定义
+├── seed.ts                 # 测试数据
+└── migrations/             # 迁移文件
+```
 
-## Learn More
+## API 接口
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/tasks` | 获取任务列表，支持 `?status=` 和 `?priority=` 筛选 |
+| POST | `/api/tasks` | 新建任务 |
+| PATCH | `/api/tasks/[id]` | 更新任务 |
+| DELETE | `/api/tasks/[id]` | 删除任务 |
