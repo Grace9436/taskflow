@@ -5,13 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { Task } from "@/types/task";
 import type { TaskCreate } from "@/lib/validations";
 
@@ -122,44 +115,42 @@ export function TaskForm({ initialData, onSubmit, onCancel }: TaskFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
-          <Label>优先级</Label>
-          <Select
+          <Label htmlFor="priority">优先级</Label>
+          <select
+            id="priority"
             value={priority}
-            onValueChange={(v) => v && setPriority(v as typeof priority)}
+            onChange={(e) =>
+              setPriority(e.target.value as "LOW" | "MEDIUM" | "HIGH")
+            }
+            className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(priorityLabels).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {Object.entries(priorityLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
           {errors.priority && (
             <p className="text-xs text-red-500">{errors.priority}</p>
           )}
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>状态</Label>
-          <Select
+          <Label htmlFor="status">状态</Label>
+          <select
+            id="status"
             value={status}
-            onValueChange={(v) => v && setStatus(v as typeof status)}
+            onChange={(e) =>
+              setStatus(e.target.value as "TODO" | "IN_PROGRESS" | "DONE")
+            }
+            className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(statusLabels).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {Object.entries(statusLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
           {errors.status && (
             <p className="text-xs text-red-500">{errors.status}</p>
           )}
